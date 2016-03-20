@@ -49,6 +49,29 @@ defmodule Dominion.GameTest do
     {:ok, _} = Dominion.Game.add_player(game, "Howard")
     {:ok, _} = Dominion.Game.add_player(game, "Jessi")
 
-    assert {:error, :too_many_players} = Dominion.Game.add_player(game, "Ennis")
+    assert {:error, :game_alredy_started} = Dominion.Game.add_player(game, "Ennis")
+  end
+
+  test "cannot start a game with the wrong number of players", %{game: game} do
+    {:ok, _} = Dominion.Game.add_player(game, "Michael")
+
+    assert {:error, :not_enough_players} = Dominion.Game.start(game)
+  end
+
+  test "can start a game with the correct number of players", %{game: game} do
+    {:ok, _} = Dominion.Game.add_player(game, "Michael")
+    {:ok, _} = Dominion.Game.add_player(game, "Lauren")
+
+    assert {:ok, _} = Dominion.Game.start(game)
+  end
+
+  test "cannot add a player to a started game", %{game: game} do
+    {:ok, _} = Dominion.Game.add_player(game, "Michael")
+    {:ok, _} = Dominion.Game.add_player(game, "Lauren")
+    {:ok, _} = Dominion.Game.add_player(game, "Howard")
+
+    assert {:ok, _} = Dominion.Game.start(game)
+
+    assert {:error, :game_alredy_started} = Dominion.Game.add_player(game, "Jessi")
   end
 end
